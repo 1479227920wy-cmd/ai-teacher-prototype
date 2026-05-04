@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI数字老师 - 小程序原型展示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F5F3EE;
+      --bg-warm: #FAF8F3;
+      --fg: #2D2A26;
+      --muted: #7D7A75;
+      --accent: #E85D04;
+      --accent-light: #FFF0E8;
+      --primary: #1A5F7A;
+      --primary-light: #E8F4F8;
+      --primary-dark: #0D3B4C;
+      --success: #2D936C;
+      --success-light: #EDFAF4;
+      --card: #FFFFFF;
+      --border: #E8E4DD;
+      --phone-bg: #111;
+      --shadow-sm: 0 1px 3px rgba(45,42,38,0.06);
+      --shadow-md: 0 4px 16px rgba(45,42,38,0.08);
+      --shadow-lg: 0 12px 40px rgba(45,42,38,0.12);
+      --shadow-phone: 0 24px 80px rgba(26,95,122,0.18), 0 8px 24px rgba(45,42,38,0.10);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-phone: 40px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Noto Sans SC', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 50px;
+      background: linear-gradient(180deg, #E8F4F8 0%, var(--bg) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: -200px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(232,93,4,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -100px; right: -150px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(26,95,122,0.07) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 46px);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    /* Screen Navigation */
+    .screen-nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 20px 30px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .nav-btn {
+      padding: 9px 20px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      border-radius: 24px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+    .nav-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(26,95,122,0.25);
+    }
+
+    /* Phone Showcase */
+    .showcase {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 48px;
+      padding: 30px 20px 70px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    /* Phone Frame */
+    .phone-wrapper {
+      display: none;
+      animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    .phone-wrapper.active { display: block; }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .phone {
+      width: 320px;
+      background: var(--phone-bg);
+      border-radius: var(--radius-phone);
+      padding: 12px;
+      box-shadow: var(--shadow-phone);
+      position: relative;
+    }
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 22px; left: 50%;
+      transform: translateX(-50%);
+      width: 90px; height: 26px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    .phone-screen {
+      width: 100%;
+      aspect-ratio: 9/19.5;
+      background: var(--bg-warm);
+      border-radius: calc(var(--radius-phone) - 6px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fg);
+      background: transparent;
+      position: relative;
+      z-index: 5;
+    }
+    .status-bar-right {
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    /* ===== SCREEN 1: HOME ===== */
+    .home-screen .header-area {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 0 18px 24px;
+      border-radius: 0 0 24px 24px;
+      color: #fff;
+    }
+    .greeting { font-size: 15px; opacity: 0.85; margin-bottom: 2px; }
+    .user-name { font-size: 21px; font-weight: 700; }
+    .search-bar {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 12px;
+      padding: 11px 14px;
+      backdrop-filter: blur(10px);
+    }
+    .search-bar svg { opacity: 0.7; flex-shrink: 0; }
+    .search-bar span { font-size: 13.5px; color: rgba(255,255,255,0.65); }
+
+    .home-content { padding: 18px; }
+    
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .qa-item {
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      cursor: pointer;
+    }
+    .qa-icon {
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 21px;
+      transition: transform 0.2s ease;
+    }
+    .qa-item:hover .qa-icon { transform: scale(1.08); }
+    .qa-icon.blue { background: var(--primary-light); }
+    .qa-icon.orange { background: var(--accent-light); }
+    .qa-icon.green { background: var(--success-light); }
+    .qa-icon.purple { background: #F3EEFF; }
+    .qa-label { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+
+    /* Section Title */
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .section-title { font-size: 17px; font-weight: 700; }
+    .section-more { font-size: 12.5px; color: var(--primary); font-weight: 500; }
+
+    /* Progress Card */
+    .progress-card {
+      background: linear-gradient(135deg, var(--primary) 0%, #20809E 100%);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      color: #fff;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-card::after {
+      content: ''; position: absolute; right: -20px; bottom: -20px;
+      width: 100px; height: 100px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    .pc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .pc-label { font-size: 13px; opacity: 0.85; }
+    .pc-value { font-size: 27px; font-weight: 900; }
+    .pc-bar { height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
+    .pc-fill { height: 100%; width: 68%; background: #fff; border-radius: 3px; }
+    .pc-stats { display: flex; gap: 18px; margin-top: 12px; font-size: 12px; opacity: 0.85; }
+
+    /* Knowledge Grid */
+    .knowledge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 11px;
+    }
+    .kg-card {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .kg-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .kg-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .kg-tag.fn { background: #EBF5FF; color: #2563EB; }
+    .kg-tag.geo { background: #FEF3EB; color: #D97706; }
+    .kg-tag.seq { background: #ECFDF5; color: #059669; }
+    .kg-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .kg-meta { font-size: 11.5px; color: var(--muted); }
+    .kg-progress { height: 4px; background: #F0EDE8; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .kg-progress > div { height: 100%; border-radius: 2px; }
+
+    /* Bottom Tab Bar */
+    .tab-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 6px 0 18px;
+      z-index: 20;
+    }
+    .tab-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 10px; color: var(--muted); cursor: pointer;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
+    .tab-item.active { color: var(--primary); }
+    .tab-item svg { width: 23px; height: 23px; }
+    .tab-label { font-weight: 500; }
+
+    /* ===== SCREEN 2: AI CHAT ===== */
+    .chat-screen { display: flex; flex-direction: column; height: 100%; background: #F8F7F4; }
+    .chat-header {
+      background: var(--card);
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 5;
+    }
+    .teacher-avatar {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), #20809E);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .chat-info { flex: 1; }
+    .chat-name { font-size: 15px; font-weight: 700; }
+    .chat-status { font-size: 11.5px; color: var(--success); display: flex; align-items: center; gap: 4px; }
+    .chat-status::before {
+      content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%;
+    }
+    .chat-actions { display: flex; gap: 12px; }
+    .chat-actions svg { color: var(--muted); cursor: pointer; }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .msg-row { display: flex; gap: 10px; max-width: 88%; }
+    .msg-row.self { flex-direction: row-reverse; align-self: flex-end; }
+    .msg-avatar {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+      color: #fff;
+      font-size: 11px;
+    }
+    .msg-avatar.teacher { background: linear-gradient(135deg, var(--primary), #20809E); }
+    .msg-avatar.student { background: linear-gradient(135deg, var(--accent), #F59E0B); }
+    .msg-bubble {
+      padding: 11px 14px;
+      border-radius: 16px;
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+    .msg-bubble.teacher-msg {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 5px;
+      color: var(--fg);
+    }
+    .msg-bubble.student-msg {
+      background: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 5px;
+    }
+    .msg-time { font-size: 10px; color: var(--muted); margin-top: 5px; padding: 0 4px; }
+    .msg-row.self .msg-time { text-align: right; }
+
+    /* Suggestion Chips in Chat */
+    .suggestion-chips {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: 8px;
+    }
+    .chip {
+      padding: 6px 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 18px;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid rgba(26,95,122,0.15);
+      transition: all 0.2s;
+    }
+    .chip:hover { background: var(--primary); color: #fff; }
+
+    .chat-input-area {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px 22px;
+      display: flex; gap: 10px; align-items: center;
+      position: relative; z-index: 5;
+    }
+    .chat-input-wrap {
+      flex: 1; display: flex; align-items: center;
+      background: #F5F3EF; border-radius: 22px;
+      padding: 3px 3px 3px 14px;
+      border: 1.5px solid var(--border);
+    }
+    .chat-input-wrap input {
+      flex: 1; border: none; background: none;
+      outline: none; font-size: 14px;
+      font-family: inherit; color: var(--fg);
+      min-width: 0;
+    }
+    .chat-input-wrap input::placeholder { color: #BFBABA; }
+    .send-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .send-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+    /* ===== SCREEN 3: PHOTO SOLVE ===== */
+    .photo-screen { display: flex; flex-direction: column; height: 100%; background: #1A1A1A; }
+    .photo-header {
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      color: #fff; position: relative; z-index: 5;
+    }
+    .photo-header h3 { font-size: 16px; font-weight: 700; }
+    .photo-header span { color: rgba(255,255,255,0.55); font-size: 13px; cursor: pointer; }
+
+    .camera-view {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative;
+      padding: 20px;
+    }
+    .viewfinder {
+      width: 240px; height: 280px;
+      border: 2px dashed rgba(255,255,255,0.3);
+      border-radius: 20px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+    }
+    .viewfinder-corner-tl, .viewfinder-corner-tr,
+    .viewfinder-corner-bl, .viewfinder-corner-br {
+      position: absolute; width: 24px; height: 24px;
+      border-color: var(--accent); border-style: solid;
+    }
+    .viewfinder-corner-tl { top: -1px; left: -1px; border-width: 3px 0 0 3px; border-radius: 12px 0 0 0; }
+    .viewfinder-corner-tr { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 12px 0 0; }
+    .viewfinder-corner-bl { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 12px; }
+    .viewfinder-corner-br { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 12px 0; }
+    .viewfinder svg { opacity: 0.5; }
+    .viewfinder-text { font-size: 14px; font-weight: 500; }
+    .vf-hint { font-size: 12px; opacity: 0.4; }
+
+    .camera-controls {
+      display: flex; align-items: center; gap: 28px; margin-top: auto; margin-bottom: 30px;
+    }
+    .cam-btn-secondary {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.6); cursor: pointer;
+      font-size: 19px;
+    }
+    .cam-capture {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 0 0 4px rgba(232,93,4,0.25);
+    }
+    .cam-capture-inner {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+    }
+    .cam-capture:hover { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(232,93,4,0.3); }
+
+    .bottom-actions {
+      background: #222; border-radius: 20px 20px 0 0;
+      padding: 16px 18px 28px;
+      display: flex; gap: 10px; position: relative; z-index: 5;
+    }
+    .ba-btn {
+      flex: 1; padding: 13px;
+      border-radius: 12px; font-size: 13px; font-weight: 600;
+      text-align: center; cursor: pointer;
+      border: none; font-family: inherit; transition: all 0.2s;
+    }
+    .ba-btn.primary { background: var(--accent); color: #fff; }
+    .ba-btn.secondary { background: #333; color: rgba(255,255,255,0.7); }
+
+    /* ===== SCREEN 4: MULTI-SOLUTION ===== */
+    .solution-screen { display: flex; flex-direction: column; height: 100%; background: var(--bg-warm); overflow: hidden; }
+    .sol-header {
+      background: var(--card);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      position: relative; z-index: 5;
+    }
+    .sol-back {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 14px; color: var(--muted); cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .sol-problem {
+      background: #FAFAF8;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+    .sol-p-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; background: var(--accent-light);
+      color: var(--accent); border-radius: 6px;
+      font-size: 11px; font-weight: 600; margin-bottom: 8px;
+    }
+    .sol-p-text { font-size: 14px; font-weight: 600; line-height: 1.7; }
+
+    .sol-tabs {
+      display: flex; gap: 0; padding: 0 18px; border-bottom: 2px solid #F0EDE8;
+      background: var(--card);
+      position: relative; z-index: 5;
+    }
+    .sol-tab {
+      padding: 13px 16px; font-size: 13.5px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.2s;
+      white-space: nowrap; display: flex; align-items: center; gap: 5px;
+    }
+    .sol-tab.active {
+      color: var(--primary); border-bottom-color: var(--primary);
+    }
+    .sol-tab-num {
+      width: 20px; height: 20px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+    }
+    .sol-tab:not(.active) .sol-tab-num { background: #EEECE7; color: var(--muted); }
+    .sol-tab.active .sol-tab-num { background: var(--primary); color: #fff; }
+
+    .sol-body {
+      flex: 1; overflow-y: auto; padding: 16px 18px 90px;
+    }
+    .sol-method-card {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .sm-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .sm-badge {
+      padding: 4px 10px; border-radius: 8px;
+      font-size: 11.5px; font-weight: 600;
+    }
+    .sm-badge.recommended { background: var(--accent-light); color: var(--accent); }
+    .sm-badge.standard { background: var(--primary-light); color: var(--primary); }
+    .sm-badge.creative { background: #F3EEFF; color: #7C3AED; }
+    .sm-difficulty { font-size: 11.5px; color: var(--muted); }
+    .sm-steps { font-size: 13.5px; line-height: 1.85; color: var(--fg); }
+    .sm-step { display: flex; gap: 8px; margin-bottom: 10px; }
+    .step-num {
+      width: 22px; height: 22px;
+      border-radius: 50%; background: var(--primary);
+      color: #fff; font-size: 11.5px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .sm-tip {
+      margin-top: 12px; padding: 11px 13px;
+      background: var(--success-light);
+      border-radius: 10px; font-size: 12.5px;
+      color: #1A7A57; font-weight: 500;
+      border-left: 3px solid var(--success);
+    }
+
+    /* ===== SCREEN 5: ANALYTICS ===== */
+    .analytics-screen { display: flex; flex-direction: column; height: 100%; background: var(--bg-warm); }
+    .ana-header {
+      background: linear-gradient(135deg, #1E3A5F 0%, var(--primary) 100%);
+      padding: 14px 18px 24px; color: #fff;
+      border-radius: 0 0 28px 28px; position: relative; z-index: 5;
+      overflow: hidden;
+    }
+    .ana-header::before {
+      content: ''; position: absolute; right: -30px; top: -30px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .ana-greeting { font-size: 13.5px; opacity: 0.8; }
+    .ana-title { font-size: 22px; font-weight: 900; margin: 4px 0 16px; }
+    .ana-score-row { display: flex; gap: 12px; }
+    .ana-score-box {
+      flex: 1; background: rgba(255,255,255,0.15);
+      border-radius: 14px; padding: 14px; text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    .asb-value { font-size: 31px; font-weight: 900; }
+    .asb-label { font-size: 11.5px; opacity: 0.75; margin-top: 2px; }
+    .asb-change { font-size: 11px; color: #6EE7B7; margin-top: 4px; }
+
+    .ana-body { flex: 1; padding: 18px; overflow-y: auto; padding-bottom: 90px; }
+
+    .ana-section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+
+    .weakness-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .weakness-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card); border-radius: var(--radius-md);
+      padding: 13px 15px; border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .wi-rank {
+      width: 28px; height: 28px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0;
+    }
+    .wi-rank.r1 { background: #FEE2E2; color: #DC2626; }
+    .wi-rank.r2 { background: #FEF3C7; color: #D97706; }
+    .wi-rank.r3 { background: #DBEAFE; color: #2563EB; }
+    .wi-info { flex: 1; }
+    .wi-name { font-size: 14px; font-weight: 600; }
+    .wi-detail { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    .wi-rate { font-size: 15px; font-weight: 700; color: #DC2626; }
+    .wi-rate.good { color: var(--success); }
+
+    .chart-placeholder {
+      background: var(--card); border-radius: var(--radius-md);
+      padding: 18px; border: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+    .cp-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .mini-chart {
+      display: flex; align-items: flex-end; gap: 6px;
+      height: 100px; padding-top: 8px;
+    }
+    .mc-bar {
+      flex: 1; border-radius: 5px 5px 0 0;
+      background: linear-gradient(to top, var(--primary), #4DB8DE);
+      min-height: 20px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .mc-bar:hover { opacity: 0.8; }
+    .mc-label { font-size: 9.5px; color: var(--muted); text-align: center; margin-top: 5px; }
+
+    .study-stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    .ss-item {
+      background: var(--card); border-radius: var(--radius-md);
+      padding: 14px; border: 1px solid var(--border);
+      text-align: center;
+    }
+    .ss-value { font-size: 24px; font-weight: 900; color: var(--primary); }
+    .ss-label { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+
+    /* ===== SCREEN 6: KNOWLEDGE DETAIL ===== */
+    .kd-screen { display: flex; flex-direction: column; height: 100%; background: var(--bg-warm); }
+    .kd-video-area {
+      position: relative; background: #000;
+      padding-top: 56.25%; flex-shrink: 0;
+    }
+    .kd-video-player {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      flex-direction: column; gap: 12px; color: #fff;
+    }
+    .play-btn-large {
+      width: 58px; height: 58px;
+      border-radius: 50%; background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px);
+    }
+    .play-btn-large:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
+    .kd-duration { font-size: 12.5px; opacity: 0.6; }
+    .kd-overlay-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 30px 16px 14px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      color: #fff;
+    }
+    .kd-oi-title { font-size: 17px; font-weight: 700; }
+    .kd-oi-subtitle { font-size: 12px; opacity: 0.7; margin-top: 3px; }
+
+    .kd-body { flex: 1; overflow-y: auto; padding: 16px 18px 80px; }
+    .kd-tabs {
+      display: flex; gap: 0; border-bottom: 2px solid #F0EDE8;
+      margin-bottom: 16px;
+    }
+    .kd-tab {
+      padding: 10px 16px; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+    }
+    .kd-tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+
+    .kd-outline { display: flex; flex-direction: column; gap: 10px; }
+    .ko-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px; background: var(--card);
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .ko-item:hover { border-color: var(--primary); }
+    .ko-num {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: var(--primary-light); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .ko-num.done { background: var(--success-light); color: var(--success); }
+    .ko-text { flex: 1; }
+    .ko-title { font-size: 13.5px; font-weight: 600; }
+    .ko-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ===== SCREEN 7: PROFILE ===== */
+    .profile-screen { display: flex; flex-direction: column; height: 100%; background: var(--bg-warm); }
+    .profile-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #0D3B4C 100%);
+      padding: 24px 18px 28px; text-align: center; color: #fff;
+      position: relative; z-index: 5;
+    }
+    .ph-avatar-lg {
+      width: 72px; height: 72px; border-radius: 22px;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px; font-size: 29px; font-weight: 900;
+      backdrop-filter: blur(10px);
+    }
+    .ph-name { font-size: 20px; font-weight: 700; }
+    .ph-school { font-size: 13px; opacity: 0.7; margin-top: 3px; }
+    .ph-stats {
+      display: flex; justify-content: center; gap: 24px; margin-top: 18px;
+    }
+    .ph-stat { text-align: center; }
+    .ph-stat-val { font-size: 22px; font-weight: 900; }
+    .ph-stat-lbl { font-size: 11.5px; opacity: 0.7; margin-top: 2px; }
+
+    .profile-body { flex: 1; padding: 18px; overflow-y: auto; padding-bottom: 90px; }
+    .pf-menu-group { margin-bottom: 18px; }
+    .pf-menu-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; background: var(--card);
+      border-radius: var(--radius-md); border: 1px solid var(--border);
+      margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+    }
+    .pf-menu-item:hover { transform: translateX(3px); box-shadow: var(--shadow-sm); }
+    .pf-mi-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .pf-mi-icon.vip { background: linear-gradient(135deg, #FEF3C7, #FCD34D); }
+    .pf-mi-icon.record { background: var(--primary-light); }
+    .pf-mi-icon.bookmark { background: var(--accent-light); }
+    .pf-mi-icon.settings { background: #F3F0FF; }
+    .pf-mi-icon.help { background: var(--success-light); }
+    .pf-mi-text { flex: 1; }
+    .pf-mi-title { font-size: 14.5px; font-weight: 600; }
+    .pf-mi-desc { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+    .pf-mi-arrow { color: #CCC8C0; font-size: 14px; }
+
+    .vip-banner {
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      border-radius: var(--radius-md); padding: 18px; color: #fff;
+      margin-bottom: 18px; position: relative; overflow: hidden;
+    }
+    .vip-banner::after {
+      content: ''; position: absolute; right: -15px; top: -15px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(232,93,4,0.2);
+    }
+    .vip-title { font-size: 16px; font-weight: 700; }
+    .vip-desc { font-size: 12.5px; opacity: 0.7; margin: 4px 0 12px; }
+    .vip-btn {
+      display: inline-block; padding: 8px 20px;
+      background: linear-gradient(135deg, var(--accent), #F59E0B);
+      border-radius: 20px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .vip-btn:hover { transform: scale(1.02); }
+
+    /* Description Panel */
+    .desc-panel {
+      max-width: 1100px; margin: 0 auto 50px; padding: 0 20px;
+    }
+    .desc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin-top: 20px;
+    }
+    .desc-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+    }
+    .desc-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .dc-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 14px;
+    }
+    .dc-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .dc-text { font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+
+    @media (max-width: 720px) {
+      .showcase { gap: 24px; padding: 20px 10px 60px; }
+      .phone { width: 290px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="badge">山西高中数学 · AI数字老师</div>
+  <h1>你的专属<span>数字老师</span> App 原型</h1>
+  <p>300个知识点 · 多思路解题 · AI个性化教学 · 学情追踪</p>
+</div>
+
+<!-- Navigation -->
+<div class="screen-nav" id="screenNav">
+  <button class="nav-btn active" data-screen="home">首页发现</button>
+  <button class="nav-btn" data-screen="chat">AI对话</button>
+  <button class="nav-btn" data-screen="photo">拍照识题</button>
+  <button class="nav-btn" data-screen="solution">多解法展示</button>
+  <button class="nav-btn" data-screen="analytics">学情分析</button>
+  <button class="nav-btn" data-screen="detail">知识点详情</button>
+  <button class="nav-btn" data-screen="profile">个人中心</button>
+</div>
+
+<!-- Showcase Area -->
+<div class="showcase">
+
+  <!-- ========== SCREEN 1: HOME ========== -->
+  <div class="phone-wrapper active" id="screen-home">
+    <div class="phone">
+      <div class="phone-screen home-screen">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span>16:38</span>
+          <div class="status-bar-right"><span>5G</span><span>87%</span></div>
+        </div>
+
+        <!-- Header -->
+        <div class="header-area">
+          <div class="greeting">下午好</div>
+          <div class="user-name">李明同学</div>
+          <div class="search-bar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span>搜索知识点、题目...</span>
+          </div>
+        </div>
+
+        <div class="home-content">
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <div class="qa-item">
+              <div class="qa-icon blue">🤖</div>
+              <span class="qa-label">问老师</span>
+            </div>
+            <div class="qa-item">
+              <div class="qa-icon orange">📸</div>
+              <span class="qa-label">拍题</span>
+            </div>
+            <div class="qa-item">
+              <div class="qa-icon green">📝</div>
+              <span class="qa-label">练一练</span>
+            </div>
+            <div class="qa-item">
+              <div class="qa-icon purple">📊</div>
+              <span class="qa-label">学情</span>
+            </div>
+          </div>
+
+          <!-- Learning Progress -->
+          <div class="progress-card">
+            <div class="pc-top">
+              <span class="pc-label">今日学习进度</span>
+              <span class="pc-value">68%</span>
+            </div>
+            <div class="pc-bar"><div class="pc-fill"></div></div>
+            <div class="pc-stats">
+              <span>已学 17/25 知识点</span>
+              <span>练习 32 题</span>
+              <span>正确率 78%</span>
+            </div>
+          </div>
+
+          <!-- Knowledge Points -->
+          <div class="section-header">
+            <span class="section-title">继续学习</span>
+            <span class="section-more">全部 →</span>
+          </div>
+          <div class="knowledge-grid">
+            <div class="kg-card">
+              <span class="kg-tag fn">函数</span>
+              <div class="kg-name">导数的几何意义</div>
+              <div class="kg-meta">第8节 · 已学 45%</div>
+              <div class="kg-progress"><div style="width:45%;background:var(--primary)"></div></div>
+            </div>
+            <div class="kg-card">
+              <span class="kg-tag geo">几何</span>
+              <div class="kg-name">椭圆的标准方程</div>
+              <div class="kg-meta">第12节 · 已学 70%</div>
+              <div class="kg-progress"><div style="width:70%;background:var(--accent)"></div></div>
+            </div>
+            <div class="kg-card">
+              <span class="kg-tag seq">数列</span>
+              <div class="kg-name">等差数列求和</div>
+              < <div class="kg-meta">第5节 · 未开始</div>
+              <div class="kg-progress"><div style="width:0%;background:var(--success)"></div></div>
+            </div>
+            <div class="kg-card">
+              <span class="kg-tag fn">函数</span>
+              <div class="kg-name">三角恒等变换</div>
+              <div class="kg-meta">第9节 · 已学 90%</div>
+              <div class="kg-progress"><div style="width:90%;background:#7C3AED"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Tab Bar -->
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="tab-label">首页</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <span class="tab-label">对话</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <span class="tab-label">拍题</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="tab-label">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 2: AI CHAT ========== -->
+  <div class="phone-wrapper" id="screen-chat">
+    <div class="phone">
+      <div class="phone-screen chat-screen">
+        <div class="status-bar" style="color:var(--fg)">
+          <span>16:42</span>
+          <div class="status-bar-right"><span>5G</span><span>86%</span></div>
+        </div>
+
+        <div class="chat-header">
+          <div class="teacher-avatar">王</div>
+          <div class="chat-info">
+            <div class="chat-name">王老师（数字版）</div>
+            <div class="chat-status">在线 · 随时为你解答</div>
+          </div>
+          <div class="chat-actions">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </div>
+        </div>
+
+        <div class="chat-messages">
+          <!-- Teacher Message -->
+          <div class="msg-row">
+            <div class="msg-avatar teacher">王</div>
+            <div>
+              <div class="msg-bubble teacher-msg">
+                李明，你今天想聊点什么？上次我们讲到导数应用那块，有继续做练习吗？
+              </div>
+              <div class="msg-time">16:38</div>
+            </div>
+          </div>
+
+          <!-- Student Message -->
+          <div class="msg-row self">
+            <div class="msg-avatar student">李</div>
+            <div>
+              <div class="msg-bubble student-msg">
+                老师好！我做了，但是有一道题卡住了。就是那个求极值的问题，我不知道什么时候该用二阶导判断
+              </div>
+              <div class="msg-time">16:39</div>
+            </div>
+          </div>
+
+          <!-- Teacher Reply with guidance -->
+          <div class="msg-row">
+            <div class="msg-avatar teacher">王</div>
+            <div>
+              <div class="msg-bubble teacher-msg">
+                好，先不急着告诉你答案。你觉得二阶导和一阶导最大的区别是什么？<br><br>提示：一个管方向，一个管什么？🤔
+              </div>
+              <div class="msg-time">16:40</div>
+              <div class="suggestion-chips">
+                <span class="chip">管弯曲程度</span>
+                <span class="chip">管变化快慢</span>
+                <span class="chip">我不确定...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-input-wrap">
+            <input type="text" placeholder="输入你的问题...">
+          </div>
+          <button class="send-btn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 3: PHOTO SOLVE ========== -->
+  <div class="phone-wrapper" id="screen-photo">
+    <div class="phone">
+      <div class="phone-screen photo-screen">
+        <div class="status-bar" style="color:#fff">
+          <span>16:45</span>
+          <div class="status-bar-right"><span>5G</span><span>85%</span></div>
+        </div>
+
+        <div class="photo-header">
+          <h3>📷 拍照识题</h3>
+          <span>相册</span>
+        </div>
+
+        <div class="camera-view">
+          <div class="viewfinder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span class="viewfinder-text">将题目放入框内拍摄</span>
+            <span class="vf-hint">支持手写题、印刷题、试卷截图</span>
+            <div class="viewfinder-corner-tl"></div>
+            <div class="viewfinder-corner-tr"></div>
+            <div class="viewfinder-corner-bl"></div>
+            <div class="viewfinder-corner-br"></div>
+          </div>
+
+          <div class="camera-controls">
+            <div class="cam-btn-secondary">⚡</div>
+            <div class="cam-capture">
+              <div class="cam-capture-inner"></div>
+            </div>
+            <div class="cam-btn-secondary">🔄</div>
+          </div>
+        </div>
+
+        <div class="bottom-actions">
+          <div class="ba-btn secondary">从相册选择</div>
+          <div class="ba-btn primary">智能识别并解答 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 4: MULTI-SOLUTION ========== -->
+  <div class="phone-wrapper" id="screen-solution">
+    <div class="phone">
+      <div class="phone-screen solution-screen">
+        <div class="status-bar" style="color:var(--fg)">
+          <span>16:48</span>
+          <div class="status-bar-right"><span>5G</span><span>84%</span></div>
+        </div>
+
+        <div class="sol-header">
+          <div class="sol-back">← 返回</div>
+          <div class="sol-problem">
+            <span class="sol-p-tag">📌 导数应用 · 极值问题</span>
+            <div class="sol-p-text">求函数 f(x) = x³ - 3x² + 2 的单调区间和极值</div>
+          </div>
+        </div>
+
+        <div class="sol-tabs">
+          <div class="sol-tab active">
+            <span class="sol-tab-num">1</span> 通法求解
+          </div>
+          <div class="sol-tab">
+            <span class="sol-tab-num">2</span> 数形结合
+          </div>
+          <div class="sol-tab">
+            <span class="sol-tab-num">3</span> 巧法速算
+          </div>
+        </div>
+
+        <div class="sol-body">
+          <!-- Method 1 -->
+          <div class="sol-method-card">
+            <div class="sm-header">
+              <span class="sm-badge recommended">⭐ 推荐方法</span>
+              <span class="sm-difficulty">难度：⭐⭐</span>
+            </div>
+            <div class="sm-steps">
+              <div class="sm-step">
+                <span class="step-num">1</span>
+                <span><strong>求导：</strong>f'(x) = 3x² - 6x = 3x(x - 2)</span>
+              </div>
+              <div class="sm-step">
+                <span class="step-num">2</span>
+                <span><strong>找临界点：</strong>令 f'(x) = 0，得 x₁ = 0 或 x₂ = 2</span>
+              </div>
+              <div class="sm-step">
+                <span class="step-num">3</span>
+                <span><strong>列表分析符号：</strong><br>x &lt; 0 时 f'&gt;0 ↗；0&lt;x&lt;2 时 f'&lt;0 ↘；x&gt;2 时 f'&gt;0 ↗</span>
+              </div>
+              <div class="sm-step">
+                <span class="step-num">4</span>
+                <span><strong>结论：</strong>极大值 f(0)=2，极小值 f(2)=-2</span>
+              </div>
+            </div>
+            <div class="sm-tip">
+              💡 老师提醒：列表法是最稳妥的，考试时推荐用这个方法，不容易丢分！
+            </div>
+          </div>
+
+          <!-- Method 2 Preview -->
+          <div class="sol-method-card" style="opacity:0.6;border-style:dashed;">
+            <div class="sm-header">
+              <span class="sm-badge standard">📐 方法二：数形结合</span>
+              <span class="sm-difficulty">难度：⭐⭐⭐</span>
+            </div>
+            <div class="sm-steps" style="color:var(--muted);">
+              通过画图观察导函数图像与 x 轴交点，直观判断原函数的单调性...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 5: ANALYTICS ========== -->
+  <div class="phone-wrapper" id="screen-analytics">
+    <div class="phone">
+      <div class="phone-screen analytics-screen">
+        <div class="status-bar" style="color:#fff">
+          <span>16:50</span>
+          <div class="status-bar-right"><span>5G</span><span>83%</span></div>
+        </div>
+
+        <div class="ana-header">
+          <div class="ana-greeting">学情报告</div>
+          <div class="ana-title">李明同学的学习档案</div>
+          <div class="ana-score-row">
+            <div class="ana-score-box">
+              <div class="asb-value">127</div>
+              <div class="asb-label">累计学习(小时)</div>
+            </div>
+            <div class="ana-score-box">
+              <div class="asb-value">78%</div>
+              <div class="asb-label">平均正确率</div>
+              <div class="asb-change">↑ 5% 较上周</div>
+            </div>
+            <div class="ana-score-box">
+              <div class="asb-value">89</div>
+              <div class="asb-label">已掌握知识点</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ana-body">
+          <div class="ana-section-title">薄弱环节 Top 3</div>
+          <div class="weakness-list">
+            <div class="weakness-item">
+              <div class="wi-rank r1">1</div>
+              <div class="wi-info">
+                <div class="wi-name">导数综合应用</div>
+                <div class="wi-detail">近10次练习错误率最高</div>
+              </div>
+              <div class="wi-rate">35%</div>
+            </div>
+            <div class="weakness-item">
+              <div class="wi-rank r2">2</div>
+              <div class="wi-info">
+                <div class="wi-name">圆锥曲线计算</div>
+                <div class="wi-detail">运算量大的题容易出错</div>
+              </div>
+              <div class="wi-rate">42%</div>
+            </div>
+            <div class="weakness-item">
+              <div class="wi-rank r3">3</div>
+              <div class="wi-info">
+                <div class="wi-name">立体几何证明</div>
+                <div class="wi-detail">辅助线添加思路不清</div>
+              </div>
+              <div class="wi-rate good">61%</div>
+            </div>
+          </div>
+
+          <div class="ana-section-title">近7天学习趋势</div>
+          <div class="chart-placeholder">
+            <div class="cp-title">每日做题数量</div>
+            <div class="mini-chart">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:40%"></div><div class="mc-label">周一</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:65%"></div><div class="mc-label">周二</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:45%"></div><div class="mc-label">周三</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:80%"></div><div class="mc-label">周四</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:55%"></div><div class="mc-label">周五</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:95%"></div><div class="mc-label">周六</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div class="mc-bar" style="height:70%"></div><div class="mc-label">周日</div></div>
+            </div>
+          </div>
+
+          <div class="study-stats">
+            <div class="ss-item">
+              <div class="ss-value">156</div>
+              <div class="ss-label">累计刷题</div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-value">23</div>
+              <div class="ss-label">错题待复习</div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-value">12天</div>
+              <div class="ss-label">连续学习</div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-value">Top15%</div>
+              <div class="ss-label">班级排名</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="tab-label">首页</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <span class="tab-label">对话</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <span class="tab-label">拍题</span>
+          </div>
+          <div class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="tab-label">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 6: KNOWLEDGE DETAIL ========== -->
+  <div class="phone-wrapper" id="screen-detail">
+    <div class="phone">
+      <div class="phone-screen kd-screen">
+        <div class="kd-video-area">
+          <div class="kd-video-player">
+            <div class="play-btn-large">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><polygon points="8 5 19 12 8 19"/></svg>
+            </div>
+            <span class="kd-duration">时长 18:32</span>
+          </div>
+          <div class="kd-overlay-info">
+            <div class="kd-oi-title">导数的几何意义</div>
+            <div class="kd-oi-subtitle">第8节 · 函数与导数模块</div>
+          </div>
+        </div>
+
+        <div class="kd-body">
+          <div class="kd-tabs">
+            <div class="kd-tab active">目录</div>
+            <div class="kd-tab">笔记</div>
+            <div class="kd-tab">习题</div>
+            <div class="kd-tab">讨论</div>
+          </div>
+
+          <div class="kd-outline">
+            <div class="ko-item">
+              <div class="ko-num done">✓</div>
+              <div class="ko-text">
+                <div class="ko-title">1. 导数的定义回顾</div>
+                <div class="ko-time">03:24 · 已完成</div>
+              </div>
+            </div>
+            <div class="ko-item">
+              <div class="ko-num done">✓</div>
+              <div class="ko-text">
+                <div class="ko-title">2. 切线斜率的几何意义</div>
+                <div class="ko-time">05:18 · 已完成</div>
+              </div>
+            </div>
+            <div class="ko-item" style="border-color:var(--primary);background:var(--primary-light);">
+              <div class="ko-num" style="background:var(--primary);color:#fff;">3</div>
+              <div class="ko-text">
+                <div class="ko-title">3. 导数正负与函数增减 ⏵ 正在播放</div>
+                <div class="ko-time">06:42 · 播放中</div>
+              </div>
+            </div>
+            <div class="ko-item">
+              <div class="ko-num">4</div>
+              <div class="ko-text">
+                <div class="ko-title">4. 典型例题精讲（3道）</div>
+                <div class="ko-time">03:08</div>
+              </div>
+            </div>
+            <div class="ko-item">
+              <div class="ko-num">5</div>
+              <div class="ko-text">
+                <div class="ko-title">5. 易错点总结 + 随堂练习</div>
+                <div class="ko-time">04:20</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN 7: PROFILE ========== -->
+  <div class="phone-wrapper" id="screen-profile">
+    <div class="phone">
+      <div class="phone-screen profile-screen">
+        <div class="status-bar" style="color:#fff">
+          <span>16:52</span>
+          <div class="status-bar-right"><span>5G</span><span>82%</span></div>
+        </div>
+
+        <div class="profile-hero">
+          <div class="ph-avatar-lg">李</div>
+          <div class="ph-name">李明</div>
+          <div class="ph-school">大同市第一中学 · 高二年级</div>
+          <div class="ph-stats">
+            <div class="ph-stat">
+              <div class="ph-stat-val">89</div>
+              <div class="ph-stat-lbl">已掌握</div>
+            </div>
+            <div class="ph-stat">
+              <div class="ph-stat-val">127h</div>
+              <div class="ph-stat-lbl">学习时长</div>
+            </div>
+            <div class="ph-stat">
+              <div class="ph-stat-val">12</div>
+              <div class="ph-stat-lbl">连续天数</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-body">
+          <div class="vip-banner">
+            <div class="vip-title">🎓 开通VIP会员</div>
+            <div class="vip-desc">解锁全部300个知识点 + 无限AI对话 + 专属答疑</div>
+            <div class="vip-btn">查看会员权益 →</div>
+          </div>
+
+          <div class="pf-menu-group">
+            <div class="pf-menu-item">
+              <div class="pf-mi-icon vip">👑</div>
+              <div class="pf-mi-text">
+                <div class="pf-mi-title">我的会员</div>
+                <div class="pf-mi-desc">有效期至 2026.08.01</div>
+              </div>
+              <div class="pf-mi-arrow">›</div>
+            </div>
+            <div class="pf-menu-item">
+              <div class="pf-mi-icon record">📈</div>
+              <div class="pf-mi-text">
+                <div class="pf-mi-title">学习记录</div>
+                <div class="pf-mi-desc">完整的学习轨迹回放</div>
+              </div>
+              <div class="pf-mi-arrow">›</div>
+            </div>
+            <div class="pf-menu-item">
+              <div class="pf-mi-icon bookmark">⭐</div>
+              <div class="pf-mi-text">
+                <div class="pf-mi-title">我的收藏</div>
+                <div class="pf-mi-desc">收藏的知识点和题目</div>
+              </div>
+              <div class="pf-mi-arrow">›</div>
+            </div>
+            <div class="pf-menu-item">
+              <div class="pf-mi-icon settings">⚙️</div>
+              <div class="pf-mi-text">
+                <div class="pf-mi-title">设置</div>
+                <div class="pf-mi-desc">账号、通知、隐私设置</div>
+              </div>
+              <div class="pf-mi-arrow">›</div>
+            </div>
+            <div class="pf-menu-item">
+              <div class="pf-mi-icon help">💬</div>
+              <div class="pf-mi-text">
+                <div class="pf-mi-title">帮助与反馈</div>
+                <div class="pf-mi-desc">常见问题和意见反馈</div>
+              </div>
+              <div class="pf-mi-arrow">›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /showcase -->
+
+<!-- Feature Description -->
+<div class="desc-panel">
+  <h2 style="font-size:22px;font-weight:900;text-align:center;margin-bottom:4px;">核心功能一览</h2>
+  <p style="text-align:center;color:var(--muted);font-size:14px;">点击上方标签切换不同界面预览</p>
+  <div class="desc-grid">
+    <div class="desc-card">
+      <div class="dc-icon" style="background:var(--primary-light)">🤖</div>
+      <div class="dc-title">AI数字老师对话</div>
+      <div class="dc-text">模拟真实一对一教学场景，引导学生思考而非直接给答案。支持追问、启发式教学、多轮对话。</div>
+    </div>
+    <div class="desc-card">
+      <div class="dc-icon" style="background:var(--accent-light)">📸</div>
+      <div class="dc-title">拍照智能识题</div>
+      <div class="dc-text">对准题目拍照即可识别，自动匹配知识点库，支持手写体、印刷体、试卷截图。</div>
+    </div>
+    <div class="desc-card">
+      <div class="dc-icon" style="background:var(--success-light)">🔀</div>
+      <div class="dc-title">多思路解题展示</div>
+      <div class="dc-text">同一道题提供3-5种不同解法，每种标注适用场景、难度等级、考试推荐度。</div>
+    </div>
+    <div class="desc-card">
+      <div class="dc-icon" style="background:#F3EEFF">📊</div>
+      <div class="dc-title">个性化学情追踪</div>
+      <div class="dc-text">自动记录错题、弱点分析、学习曲线，为每个学生生成专属提升方案。</div>
+    </div>
+    <div class="desc-card">
+      <div class="dc-icon" style="background:#FEF3EB">🎬</div>
+      <div class="dc-title">结构化知识视频</div>
+      <div class="dc-text">300个知识点配套精讲视频，按章节切片，支持倍速播放、笔记同步、课后习题。</div>
+    </div>
+    <div class="desc-card">
+      <div class="dc-icon" style="background:linear-gradient(135deg,#FEF3C7,#FCD34D)">👑</div>
+      <div class="dc-title">付费会员体系</div>
+      <div class="dc-text">分级会员制：基础免费 / VIP月卡 / 私教年费，灵活的变现模式适配不同需求学生。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Screen switching logic
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const screens = document.querySelectorAll('.phone-wrapper');
+
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetScreen = btn.dataset.screen;
+
+      // Update nav buttons
+      navBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update screen visibility with animation reset
+      screens.forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('screen-' + targetScreen);
+      if (target) {
+        target.style.animation = 'none';
+        void target.offsetWidth; // trigger reflow
+        target.style.animation = null;
+        target.classList.add('active');
+      }
+    });
+  });
+
+  // Add hover effect on knowledge cards
+  document.querySelectorAll('.kg-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.borderColor = 'var(--primary)';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.borderColor = 'var(--border)';
+    });
+  });
+
+  // Chip click interaction
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.style.background = 'var(--primary)';
+      chip.style.color = '#fff';
+    });
+  });
+</script>
+
+</body>
+</html>
